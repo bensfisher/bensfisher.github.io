@@ -58,7 +58,7 @@
 
   <div class="article">
     <p>Welcome to the blog. For this first post, I'm going to talk about a paper
-I have been working on with my classmate, <a href="johnbeieler.org">John Beieler</a>.</p>
+I have been working on with my classmate, <a href="http://johnbeieler.org">John Beieler</a>.</p>
 <p>I'll start off with a little background. This research builds on a 
 government project known as ICEWS (Intergrated Conflict Early Warning System),
 whose original goal was to develop predictive models for events of interest, 
@@ -106,10 +106,17 @@ we would prefer those to true negatives. The idea is that we would prefer
 to say a rebellion will happen and be wrong than to predict no rebellion and
 be unprepared. Logistic regression seems to be marginally better than random
 forest for use.</p>
+<p>Below are ROC plots for each of the models. These plot the fraction of true
+positives vs the fraction of false positives as the discrimination threshold 
+is varied.</p>
 <p><img alt="Alt text" src="/images/roc_plot_Prediction_AdaBoost.png" />
 <img alt="Alt text" src="/images/roc_plot_Prediction_LogisticRegression.png" />
 <img alt="Alt text" src="/images/roc_plot_Prediction_RandomForest.png" />
 <img alt="Alt text" src="/images/roc_plot_Prediction_SVM.png" /></p>
+<p>The only one that doesn't perform too well is adaptive boosting. Random forest
+and SVM both have slightly higher area under the curve than logistic regression. 
+However, we are less concerned with false positives than false negatives, which
+ROC curves don't tell us much about.</p>
 <h2>Final Thoughts</h2>
 <p>This all still needs some work. The main issue at the moment is that we are
 predicting every month that a rebellion is ongoing, rather than only rebellion
