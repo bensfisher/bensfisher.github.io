@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+      <title>Ben Fisher</title>
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css' />
+      <link href='http://fonts.googleapis.com/css?family=Merriweather:300' rel='stylesheet' type='text/css'/>
+      <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,400,700' rel='stylesheet' type='text/css'/>
+      <link rel="stylesheet" type="text/css" href="./theme/css/icons.css"/>
+      <link rel="stylesheet" type="text/css" href="./theme/css/styles.css"/>
+      <meta charset="utf-8" />
+  </head>
+
+  <body id="index">
+    <!-- header -->
+    <header class="siteheader">
+      <!-- site image -->
+
+      <div class = "sitebanner">
+        <h1><a class="sitetitle nodec" href=".">Ben Fisher</a></h1>
+        <h3 class ="sitesubtitle"></h3>
+        <!-- nav -->
+        <nav class="menu">
+          <ul>
+            <!-- menu items-->
+            <!--pages-->
+                <li><a class="nodec" href="./pages/about.html">About Me</a></li>
+            <!-- services icons -->
+              <li><a class="nodec icon-mail-alt" href="mailto:bensfisher@gmail.com"></a></li>
+              <li><a class="nodec icon-github" href="https://github.com/bensfisher"></a></li>
+              <li><a class="nodec icon-twitter" href="https://twitter.com/matachin_tower"></a></li>
+          </ul>
+        </nav>
+      </div> <!-- sitebanner -->
+    </header>
+
+    <!-- content -->
+
+<section class="content">
+
+  <h3 class="posttitle">
+    <a class="nodec" href="/the-problem-with-the-roc-curve.html" rel="bookmark" title="Permalink to The Problem with the ROC Curve">
+      The Problem with the ROC Curve
+    </a>
+  </h3>
+
+  <div class="postinfo">
+    <p class="published" title="2014-07-08T00:00:00">
+      Tue 08 July 2014
+    </p>
+
+  </div><!-- .postinfo -->
+
+  <div class="article">
+    <p>The Receiver Operating Characteristic (ROC) curve is one of the most ubiquitous
+measures of accuracy in the machine learning literature. Originally developed 
+for signal detection during World War II, the curve provides a graphical
+representation of a predictive model's accuracy by showing the true positive and
+false positive rates for a model at various predictive thresholds. These
+thresholds, also referred to as cutoff points, serve to divide observations
+based on their predicted probabilities. For example, a threshold of .5 means
+that the model classifies observations with predicted probabilities greater
+than or equal to .5 as positives, and those with predicted probabilities less
+than .5 as negatives. Because it the ideal cutoff point varies based on the
+problem at hand, the ROC curve provides a means of determining where the best
+cutoff point is. </p>
+<p>The main metric derived from the ROC curve is the area under the curve (AUC) 
+score, which, as the name suggests, is the area of the graph contained under 
+the ROC curve. The ideal AUC is 1.0, which means the model correctly classifies
+all of the positive observations without any false positives. An AUC of .5 
+indicates that the model is no better than a coin flip. The AUC is often used
+as a means of model comparison. The intuition is that models with a higher AUC
+are doing a better job of assigning higher predicted probabilities to positive
+observations and lower predicted probabilities to negative observations.</p>
+<p><img alt="Alt text" src="/images/logit_roc.png" /></p>
+<p>The figure above shows ROC curves comparing models for predicting Militarized
+Interstate Incidents [1]. With AUC scores all above .9, it looks like the models
+are all very good. This is when ROC curves become misleading. The axes only 
+measure the rates of positive and negative observations, not the actual numbers. 
+This is fine for a balanced dataset, but it is problematic for underbalanced 
+datasets like the one here. In this case, there are about 300 positive
+observations and over 100,000 negative observations. Suddenly, achieving a true
+positive rate of .8 with a false positive rate of .2 doesn't look so good. A 
+false postive rate of just .01 means 1,000 false positives. This is an unacceptable
+number if we are only getting 100 or so true positives in exchange. </p>
+<p>This issue also renders the ROC curves usefulness for model comparison irrelevant
+for unbalanced data. Even if one model has a better AUC than another, it does
+not mean much if that is due to better performance when the false positive rate
+is greater than .1. The number of true positives are already overwhelmed by 
+the number of false positives. Performance past this point is irrelevant. Really, 
+the best model in this case would be the one that achieves the highest true 
+positive rate, while maintaining a false positive rate of 0. </p>
+<p>For conflict researchers who work almost exclusively with unbalanced data, either
+avoid using ROC curves and related AUC curves as metrics, or include the total
+number of positive and negative cases in the sample as a note attached to the
+figure. Fortunately, there are alternatives. I'll discuss one of these, the 
+precision-recall curve, in another post.</p>
+<h2>Notes</h2>
+<p>[1] I won't get into what incidents are here, but those who are curious can
+check out the [Correlates of War Project page] (http://correlatesofwar.org).</p>
+  </div><!-- .content -->
+
+</section>
+
+
+    <!-- footer -->
+    <footer>
+      <p>
+        © Ben Fisher, license <a href=""> </a>
+        unless otherwise noted.
+        Generated by <a href= "http://docs.getpelican.com/">Pelican</a> with
+        <a href="http://github.com/porterjamesj/crowsfoot">crowsfoot</a> theme.
+      </p>
+    </footer>
+  </body>
+</html>
