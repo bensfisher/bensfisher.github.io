@@ -69,9 +69,9 @@ protestors - for all countries. The latter dataset examines armed conflict in
 general, with a focus on African countries. For the purposes of this blog post,
 I only look at ACLED events that involved violence against civilians.</p>
 <p>Now, to get a few of the gory preprocessing details out of the way: 
-<em> this is looking at African countries from 1997-2012
-</em> I drop ACLED observations with fewer than 5 fatalities to better match the Atrocities coding rules
-* I drop a couple of extreme outliers from each dataset</p>
+this is looking at African countries from 1997-2012, I drop ACLED observations 
+with fewer than 5 fatalities to better match the Atrocities coding rules, and 
+I drop a couple of extreme outliers from each dataset.[1]</p>
 <p>The two datasets record roughly the same number of observations - 1009 in the Atrocities
 dataset and 1037 in ACLED - but the total number of deaths recorded varies 
 substantially. The Atrocities data for this sample records 83913 fatalities, while
@@ -94,6 +94,10 @@ increases, but the numbers are remarkably inconsistent as recently as 2010. Howe
 this doesn't resolve the fact that our historical data are all over the place. 
 The 'ground truth' of political violence remains murky at best.</p>
 <h2>Notes</h2>
+<p>[1] The Atrocities dataset has a campaign observation for Sudan where 50000 
+people were killed, and ACLED records a major massacre in the Congo where 
+25000 were killed. Neither of these observations were matched in the other dataset.
+I discarded them to keep the figures readable.</p>
 <p>Data, figures, and replication code for this post can be accessed 
 <a href="https://github.com/bensfisher/bensfisher.github.io/tree/master/Replication/Counting%20the%20Dead">here</a>.</p>
   </div><!-- .content -->
