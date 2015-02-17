@@ -1,0 +1,680 @@
+is.matrix(df)
+source("http://sna.stanford.edu/setup.R")
+library(igraph)
+advice_data_frame <- read.table('http://sna.stanford.edu/sna_R_labs/data/Krack-High-Tec-edgelist-Advice.txt')#
+friendship_data_frame <- read.table('http://sna.stanford.edu/sna_R_labs/data/Krack-High-Tec-edgelist-Friendship.txt')#
+reports_to_data_frame <- read.table('http://sna.stanford.edu/sna_R_labs/data/Krack-High-Tec-edgelist-ReportsTo.txt')
+advice_data_frame
+head(friendship_data_frame)
+attributes <- read.csv('http://sna.stanford.edu/sna_R_labs/data/Krack-High-Tec-Attributes.csv', header=T)
+attributes
+colnames(advice_data_frame) <- c('ego', 'alter', 'advice_tie')#
+head(advice_data_frame)#
+colnames(friendship_data_frame) <- c('ego', 'alter', 'friendship_tie')#
+head(friendship_data_frame)#
+colnames(reports_to_data_frame) <- c('ego', 'alter', 'reports_to_tie')#
+head(reports_to_data_frame)
+advice_data_frame$ego == friendship_data_frame$ego
+which(advice_data_frame$ego != friendship_data_frame$ego)
+which(advice_data_frame$alter != friendship_data_frame$alter)#
+which(reports_to_data_frame$alter != friendship_data_frame$alter)#
+which(reports_to_data_frame$ego != friendship_data_frame$ego)
+krack_full_data_frame <- cbind(advice_data_frame, #
+	friendship_data_frame$friendship_tie, #
+	reports_to_data_frame$reports_to_tie)#
+head(krack_full_data_frame)
+names(krack_full_data_frame)[4:5] <- c("friendship_tie",
+"reports_to_tie")
+head(krack_full_data_frame)
+krack_full_data_frame <- data.frame(ego = advice_data_frame[,1],#
+	alter = advice_data_frame[,2],#
+	advice_tie = advice_data_frame[,3],#
+	friendship_tie = friendship_data_frame[,3], #
+	reports_to_tie = reports_to_data_frame[,3])#
+head(krack_full_data_frame)
+krack_full_nonzero_edges <- subset(krack_full_data_frame, #
+	(advice_tie > 0 | friendship_tie > 0 | reports_to_tie > 0))#
+head(krack_full_nonzero_edges)
+krack_full <- graph.data.frame(krack_full_nonzero_edges)
+summary(krack_full)
+get.edge.attribute(krack_full, 'advice_tie')
+get.edge.attribute(krack_full, 'friendship_tie')
+get.edge.attribute(krack_full, 'reports_to_tie')
+krack_full_symmetrized <- as.undirected(krack_full, mode='collapse')#
+summary(krack_full_symmetrized)
+for (i in V(krack_full)) {#
+    for (j in names(attributes)) {#
+        krack_full <- set.vertex.attribute(krack_full, #
+                                           j, #
+                                           index = i, #
+                                           attributes[i + 1, j])#
+    }#
+}
+attributes = cbind(1:length(attributes[,1]), attributes)#
+krack_full <- graph.data.frame(d = krack_full_nonzero_edges, #
+                               vertices = attributes)
+summary(krack_full)#
+# We can see a list of the values for a given attribute for all of#
+# the actors in the network.#
+get.vertex.attribute(krack_full, 'AGE')#
+get.vertex.attribute(krack_full, 'TENURE')#
+get.vertex.attribute(krack_full, 'LEVEL')#
+get.vertex.attribute(krack_full, 'DEPT')
+plot(krack_full)
+krack_advice_only <- delete.edges(krack_full, #
+    E(krack_full)[get.edge.attribute(krack_full,#
+    name = "advice_tie") == 0])#
+summary(krack_advice_only)
+plot(krack_advice_only)
+krack_friendship_only <- delete.edges(krack_full, #
+    E(krack_full)[get.edge.attribute(krack_full, #
+    name = "friendship_tie") == 0])
+plot(krack_friendship_only)
+krack_reports_to_only <- delete.edges(krack_full, #
+    E(krack_full)[get.edge.attribute(krack_full, #
+    name = "reports_to_tie") == 0])
+plot(krack_reports_to_only)
+reports_to_layout <- layout.fruchterman.reingold(krack_reports_to_only)
+plot(krack_reports_to_only,
+layout=reports_to_layout)
+dept_vertex_colors = get.vertex.attribute(krack_full,"DEPT")#
+colors = c('Black', 'Red', 'Blue', 'Yellow', 'Green')#
+dept_vertex_colors[dept_vertex_colors == 0] = colors[1]#
+dept_vertex_colors[dept_vertex_colors == 1] = colors[2]#
+dept_vertex_colors[dept_vertex_colors == 2] = colors[3]#
+dept_vertex_colors[dept_vertex_colors == 3] = colors[4] #
+dept_vertex_colors[dept_vertex_colors == 4] = colors[5]
+plot(krack_reports_to_only, #
+    layout=reports_to_layout, #
+    vertex.color=dept_vertex_colors, #
+    vertex.label=NA, #
+    edge.arrow.size=.5)
+tenure_vertex_sizes = get.vertex.attribute(krack_full,"TENURE")
+plot(krack_reports_to_only, #
+     layout=reports_to_layout, #
+     vertex.color=dept_vertex_colors, #
+     vertex.label=NA, #
+     edge.arrow.size=.5,#
+     vertex.size=tenure_vertex_sizes)
+tie_type_colors = c(rgb(1,0,0,.5), rgb(0,0,1,.5), rgb(0,0,0,.5))#
+E(krack_full)$color[ E(krack_full)$advice_tie==1 ] = tie_type_colors[1]#
+E(krack_full)$color[ E(krack_full)$friendship_tie==1 ] = tie_type_colors[2]#
+E(krack_full)$color[ E(krack_full)$reports_to_tie==1 ] = tie_type_colors[3]#
+E(krack_full)$arrow.size=.5 #
+V(krack_full)$color = dept_vertex_colors#
+V(krack_full)$frame = dept_vertex_colors
+plot(krack_full, #
+     layout=reports_to_layout, #
+     vertex.color=dept_vertex_colors, #
+     vertex.label=NA, #
+     edge.arrow.size=.5,#
+     vertex.size=tenure_vertex_sizes)
+legend(1, #
+       1.25,#
+       legend = c('Advice', #
+                  'Friendship',#
+                  'Reports To'), #
+       col = tie_type_colors, #
+       lty=1,#
+       cex = .7)
+plot(krack_friendship_only, #
+     layout=reports_to_layout, #
+     vertex.color=dept_vertex_colors, #
+     vertex.label=NA, #
+     edge.arrow.size=.5,#
+     vertex.size=tenure_vertex_sizes, #
+     main='Krackhardt High-Tech Managers')
+library(ergm)
+data(studentnets.ergm173, package = "NetData")
+rm(list=ls())
+load the "ergm" library#
+library(ergm)#
+## Load the data:#
+data(studentnets.ergm173, package = "NetData")
+id <- seq(1,22,1)
+nodes<-cbind(id, nodes)
+nodes
+edges2<-merge(nodes[,1:2], edges, by.x = "std_id", by.y="alter_id")
+names(edges2)[1]<-"alter_id"
+names(edges2)[2]<-"alter_R_id"#
+edges3<- merge(nodes[,1:2], edges2, by.x = "std_id", by.y="ego_id")#
+# shows that we merged new alter id that reflects #
+# integer id which R requires.#
+names(edges3)[1]<-"ego_id"#
+names(edges3)[2]<-"ego_R_id"#
+edges3#
+# The edges3 dataset now contains integer-increasing IDs sorted by#
+# ego_R_id. For our work, we will use the ego_R_id and alter_R_id#
+# values, but we retain the std_id values for reference.#
+# Specify the network we'll call net - where dyads #
+# are the unit of analysis...#
+net<-network(edges3[,c("ego_R_id", "alter_R_id")])
+set.edge.attribute(net, "ego_R_id", edges[,2])#
+set.edge.attribute(net, "alter_R_id", edges[,4])
+net %v% "gender" <- nodes[,3]#
+net %v% "grade" <- nodes[,4]#
+net %v% "race" <- nodes[,5]#
+net %v% "pci" <- nodes[,6]#
+# Review some summary information regarding the network to make#
+# sure we have #specified things correctly.  #
+summary(net)
+plot(net)
+m1<-ergm(net ~ edges + mutual + nodematch("gender") + absdiff#
+    ("pci"),burnin=15000,MCMCsamplesize=30000,verbose=FALSE)
+mcmc.diagnostics(m1)
+summary(m1)
+lapply(m1[1],exp)
+seat <- net
+set.edge.attribute(seat, "seat_net", edges3[,7])
+set.edge.attribute(net, "friend1", edges3[,5])
+test<-edges["sem1_friend">=1,]
+test2<-merge(nodes[,1:2], test, by.x = "std_id", by.y="alter_id")#
+names(test2)[1]<-"alter_id"#
+names(test2)[2]<-"alter_R_id"#
+test3<- merge(nodes[,1:2], test2, by.x = "std_id", by.y="ego_id")#
+names(test3)[1]<-"ego_id"#
+names(test3)[2]<-"ego_R_id"#
+net1<-network(test3[,c("ego_R_id", "alter_R_id")])#
+A<-as.matrix(net1)#
+B<-t(as.matrix(net1)) #B = A transpose#
+mut_mat <- A + B#
+lag_mut<-as.network(mut_mat) # relies on dichotomous#
+                             # interpretation of edges
+m2<-ergm(net ~ edges + mutual + nodematch("gender") + #
+    nodematch("race")  + edgecov(lag_mut),burnin=20000,#
+    MCMCsamplesize=70000,verbose=FALSE,seed=25,#
+    calc.mcmc.se = FALSE,maxit=6)#
+pdf("8.3_lab8_mcmc_m2.pdf")#
+mcmc.diagnostics(m2)
+dev.off()
+summary(m2)
+m2.sim<-simulate(m2,nsim=100);#
+simnet1<-m2.sim$networks[[1]]#
+summary(simnet1)
+plot(m2.sim$networks[[1]],vertex.col="WHITE")
+m2.gof <- gof(m2~idegree)
+plot(m2.gof)
+setwd('~/Blog/data/ACLED v WWAD/')
+acled = read.table('acled.txt', sep='\t', header=TRUE)
+?read.table
+acled = read.csv('acled.csv')
+colnames(acled)
+head(acled)
+acled$NOTES = NULL
+wwad = read.csv('pitf_atrocities.csv')
+acled = cbind(acled$EVENT_DATE, acled$YEAR, acled$EVENT_TYPE, acled$INTER2, acled$COUNTRY, acled$ADMIN1, acled$ADMIN2, acled$LOCATION, acled$FATALITIES)
+colnames(acled)
+acled = read.csv('acled.csv')
+acled = c(acled$EVENT_DATE, acled$YEAR, acled$EVENT_TYPE, acled$INTER2, acled$COUNTRY, acled$ADMIN1, acled$ADMIN2, acled$LOCATION, acled$FATALITIES)
+colnames(acled)
+acled = read.csv('acled.csv')
+acled = cbind(acled$EVENT_DATE, acled$YEAR, acled$EVENT_TYPE, acled$INTER2, acled$COUNTRY, acled$ADMIN1, acled$ADMIN2, acled$LOCATION, acled$FATALITIES)
+colnames(acled) = c('event_date', 'year', 'event_type', 'inter2', 'country','admin1','admin2','location','fatalities')
+colnames(acled)
+colnames(wwad)
+library(dplyr)
+install.packages('dplyr')
+### Comparing death counts in ACLED and WWAD ####
+##############################################
+rm(list=ls())#
+library(ggplot2)#
+library(dplyr)#
+library(countrycode)#
+library(lubridate)#
+#
+setwd('~/Blog/data/ACLED v WWAD/')#
+#
+acled = read.csv('acled.csv')#
+wwad = read.csv('pitf_atrocities.csv')#
+regions = read.csv('regions.csv')#
+colnames(regions) = c('Country','region')#
+#
+acled = select(acled, EVENT_DATE, YEAR, EVENT_TYPE, INTER2, COUNTRY, ADMIN1, ADMIN2, LOCATION, FATALITIES)#
+acled = filter(acled, INTER2==7, FATALITIES>=5, YEAR>=1995, YEAR<=2012)#
+acled$iso = countrycode(acled$COUNTRY, "country.name", "iso3c")#
+acled$month = month(as.Date(acled$EVENT_DATE, "%d %b %Y"))#
+acled = select(acled, iso, YEAR, month, FATALITIES)#
+colnames(acled) = c('iso','year','month','acled.deaths')#
+#
+wwad = select(wwad, Country, Start.Year, Start.Month, Deaths.Number)#
+wwad = left_join(wwad, regions)#
+wwad$Country[wwad$Country=='SUD'] = 'SDN'#
+wwad$Country[wwad$Country=='Nigeria'] = 'NGA'#
+wwad$Country[wwad$Country=="South Sudan "]="SSD"#
+wwad$Country[wwad$Country=="South Sudan"]="SSD"#
+wwad$Country[wwad$Country=="Somalia"]="SOM"#
+wwad$Country[wwad$Country=="SOM "]="SOM"#
+wwad$region[wwad$Country=='SDN'] = 'AF'#
+wwad$region[wwad$Country=='NGA'] = 'AF'#
+wwad$Deaths.Number[wwad$Deaths.Number=="dozens"]=24#
+wwad$deaths = as.numeric(as.character(wwad$Deaths.Number))#
+#
+wwad = filter(wwad, region == 'AF' | Country == 'DZA' | Country == 'EGY' | Country == 'LBY' | Country == 'MAR' | Country == 'TUN')#
+wwad$Deaths.Number = wwad$region = NULL#
+#
+colnames(wwad) = c('iso','year','month','wwad.deaths')#
+wwad = na.omit(wwad)#
+#
+countries = regions$Country#
+years = seq(1995, 2012, 1)#
+months = seq(1, 12, 1)#
+grid = expand.grid(countries, years, months)#
+colnames(grid) = c('iso','year','month')#
+#
+data = merge(grid, wwad, by=c('iso','year','month'), all.x=TRUE)#
+data = merge(data, acled, by=c('iso','year','month'), all.x=TRUE)
+data = group_by(data, iso, year, month)
+fix9data
+fix(data)
+countries = unique(acled$iso)
+grid = expand.grid(countries, years, months)
+colnames(grid) = c('iso','year','month')
+data = merge(grid, wwad, by=c('iso','year','month'), all.x=TRUE)#
+data = merge(data, acled, by=c('iso','year','month'), all.x=TRUE)#
+data = group_by(data, iso, year, month)
+fix(data)
+wwad = group_by(data, iso, year, month)
+fix(wwad)
+### Comparing death counts in ACLED and WWAD ####
+##############################################
+rm(list=ls())#
+library(ggplot2)#
+library(dplyr)#
+library(countrycode)#
+library(lubridate)#
+#
+setwd('~/Blog/data/ACLED v WWAD/')#
+#
+acled = read.csv('acled.csv')#
+wwad = read.csv('pitf_atrocities.csv')#
+regions = read.csv('regions.csv')#
+colnames(regions) = c('Country','region')#
+#
+acled = select(acled, EVENT_DATE, YEAR, EVENT_TYPE, INTER2, COUNTRY, ADMIN1, ADMIN2, LOCATION, FATALITIES)#
+acled = filter(acled, INTER2==7, FATALITIES>=5, YEAR>=1995, YEAR<=2012)#
+acled$iso = countrycode(acled$COUNTRY, "country.name", "iso3c")#
+acled$month = month(as.Date(acled$EVENT_DATE, "%d %b %Y"))#
+acled = select(acled, iso, YEAR, month, FATALITIES)#
+colnames(acled) = c('iso','year','month','acled.deaths')#
+#
+wwad = select(wwad, Country, Start.Year, Start.Month, Deaths.Number)#
+wwad = left_join(wwad, regions)#
+wwad$Country[wwad$Country=='SUD'] = 'SDN'#
+wwad$Country[wwad$Country=='Nigeria'] = 'NGA'#
+wwad$Country[wwad$Country=="South Sudan "]="SSD"#
+wwad$Country[wwad$Country=="South Sudan"]="SSD"#
+wwad$Country[wwad$Country=="Somalia"]="SOM"#
+wwad$Country[wwad$Country=="SOM "]="SOM"#
+wwad$region[wwad$Country=='SDN'] = 'AF'#
+wwad$region[wwad$Country=='NGA'] = 'AF'#
+wwad$Deaths.Number[wwad$Deaths.Number=="dozens"]=24#
+wwad$deaths = as.numeric(as.character(wwad$Deaths.Number))#
+#
+wwad = filter(wwad, region == 'AF' | Country == 'DZA' | Country == 'EGY' | Country == 'LBY' | Country == 'MAR' | Country == 'TUN')#
+wwad$Deaths.Number = wwad$region = NULL#
+#
+colnames(wwad) = c('iso','year','month','wwad.deaths')#
+wwad = na.omit(wwad)#
+#
+countries = unique(acled$iso)#
+years = seq(1995, 2012, 1)#
+months = seq(1, 12, 1)#
+grid = expand.grid(countries, years, months)#
+colnames(grid) = c('iso','year','month')
+wwad = group_by(wwad, iso, year, month)
+fix(wwad)
+wwad$deaths[wwad$deaths = NA] == 0
+wwad$deaths[wwad$deaths == NA] = 0
+### Comparing death counts in ACLED and WWAD ####
+##############################################
+rm(list=ls())#
+library(ggplot2)#
+library(dplyr)#
+library(countrycode)#
+library(lubridate)#
+#
+setwd('~/Blog/data/ACLED v WWAD/')#
+#
+acled = read.csv('acled.csv')#
+wwad = read.csv('pitf_atrocities.csv')#
+regions = read.csv('regions.csv')#
+colnames(regions) = c('Country','region')#
+#
+acled = select(acled, EVENT_DATE, YEAR, EVENT_TYPE, INTER2, COUNTRY, ADMIN1, ADMIN2, LOCATION, FATALITIES)#
+acled = filter(acled, INTER2==7, FATALITIES>=5, YEAR>=1995, YEAR<=2012)#
+acled$iso = countrycode(acled$COUNTRY, "country.name", "iso3c")#
+acled$month = month(as.Date(acled$EVENT_DATE, "%d %b %Y"))#
+acled = select(acled, iso, YEAR, month, FATALITIES)#
+colnames(acled) = c('iso','year','month','acled.deaths')#
+#
+wwad = select(wwad, Country, Start.Year, Start.Month, Deaths.Number)#
+wwad = left_join(wwad, regions)#
+wwad$Country[wwad$Country=='SUD'] = 'SDN'#
+wwad$Country[wwad$Country=='Nigeria'] = 'NGA'#
+wwad$Country[wwad$Country=="South Sudan "]="SSD"#
+wwad$Country[wwad$Country=="South Sudan"]="SSD"#
+wwad$Country[wwad$Country=="Somalia"]="SOM"#
+wwad$Country[wwad$Country=="SOM "]="SOM"#
+wwad$region[wwad$Country=='SDN'] = 'AF'#
+wwad$region[wwad$Country=='NGA'] = 'AF'#
+wwad$Deaths.Number[wwad$Deaths.Number=="dozens"]=24#
+wwad$deaths = as.numeric(as.character(wwad$Deaths.Number))#
+#
+wwad = filter(wwad, region == 'AF' | Country == 'DZA' | Country == 'EGY' | Country == 'LBY' | Country == 'MAR' | Country == 'TUN')#
+wwad$Deaths.Number = wwad$region = NULL#
+#
+colnames(wwad) = c('iso','year','month','wwad.deaths')#
+wwad = na.omit(wwad)#
+#
+countries = unique(acled$iso)#
+years = seq(1995, 2012, 1)#
+months = seq(1, 12, 1)#
+grid = expand.grid(countries, years, months)#
+colnames(grid) = c('iso','year','month')
+wwad$wwad.deaths[wwad$wwad.deaths == NA] = 0
+fix(wwad)
+wwad = group_by(wwad, iso, year, month)
+nrow(wwad)
+colnames(acled)
+acled = group_by(acled, iso, year, month)
+data = merge(grid, wwad, by=c('iso','year','month'), all.x=TRUE)#
+data = merge(data, acled, by=c('iso','year','month'), all.x=TRUE)
+fix(data)
+fix(grid)
+fix(wwad)
+?group_by
+rm(list=ls())#
+library(ggplot2)#
+library(dplyr)#
+library(countrycode)#
+library(lubridate)#
+#
+setwd('~/Blog/data/ACLED v WWAD/')#
+#
+acled = read.csv('acled.csv')#
+wwad = read.csv('pitf_atrocities.csv')#
+regions = read.csv('regions.csv')#
+colnames(regions) = c('Country','region')#
+#
+acled = select(acled, EVENT_DATE, YEAR, EVENT_TYPE, INTER2, COUNTRY, ADMIN1, ADMIN2, LOCATION, FATALITIES)#
+acled = filter(acled, INTER2==7, FATALITIES>=5, YEAR>=1995, YEAR<=2012)#
+acled$iso = countrycode(acled$COUNTRY, "country.name", "iso3c")#
+acled$month = month(as.Date(acled$EVENT_DATE, "%d %b %Y"))#
+acled = select(acled, iso, YEAR, month, FATALITIES)#
+colnames(acled) = c('iso','year','month','acled.deaths')#
+#
+wwad = select(wwad, Country, Start.Year, Start.Month, Deaths.Number)#
+wwad = left_join(wwad, regions)#
+wwad$Country[wwad$Country=='SUD'] = 'SDN'#
+wwad$Country[wwad$Country=='Nigeria'] = 'NGA'#
+wwad$Country[wwad$Country=="South Sudan "]="SSD"#
+wwad$Country[wwad$Country=="South Sudan"]="SSD"#
+wwad$Country[wwad$Country=="Somalia"]="SOM"#
+wwad$Country[wwad$Country=="SOM "]="SOM"#
+wwad$region[wwad$Country=='SDN'] = 'AF'#
+wwad$region[wwad$Country=='NGA'] = 'AF'#
+wwad$Deaths.Number[wwad$Deaths.Number=="dozens"]=24#
+wwad$deaths = as.numeric(as.character(wwad$Deaths.Number))#
+#
+wwad = filter(wwad, region == 'AF' | Country == 'DZA' | Country == 'EGY' | Country == 'LBY' | Country == 'MAR' | Country == 'TUN')#
+wwad$Deaths.Number = wwad$region = NULL#
+#
+colnames(wwad) = c('iso','year','month','wwad.deaths')#
+wwad = na.omit(wwad)#
+#
+countries = unique(acled$iso)#
+years = seq(1995, 2012, 1)#
+months = seq(1, 12, 1)#
+grid = expand.grid(countries, years, months)#
+colnames(grid) = c('iso','year','month')#
+#
+wwad$wwad.deaths[wwad$wwad.deaths == NA] = 0
+wwad$wwad.deaths[wwad$wwad.deaths == NA] = 0
+monthly = group_by(wwad, iso, year, month)
+wwad = summarise(monthly, wwad.deaths = sum(wwad.deaths))
+fix(wwad)
+monthly = group_by(acled, iso, year, month)#
+acled = summarise(monthly, acled.deaths = sum(acled.deaths))
+data = merge(grid, wwad, by=c('iso','year','month'), all.x=TRUE)
+data = merge(data, acled, by=c('iso','year','month'), all.x=TRUE)
+fix(data)
+data$wwad.deaths[data$wwad.deaths==NA] = 0#
+data$acled.deaths[data$acled.deaths==NA] = 0
+data2 = transform(data, date = strptime(paste(month,year), "%m%Y"))
+fix(data2)
+fix(as.data.frame(data2))
+data2 = as.data.frame(data2)
+fix(data2)
+data2
+data$wwad.deaths[data$wwad.deaths==NA] = 0
+head(data)
+is.numeric(wwad.deaths)
+is.numeric(data$wwad.deaths)
+data$wwad.deaths[data$wwad.deaths=='NA'] = 0
+head(data)
+data$wwad.deaths[data$wwad.deaths==NA] == 0
+### Comparing death counts in ACLED and WWAD ####
+##############################################
+rm(list=ls())#
+library(ggplot2)#
+library(dplyr)#
+library(countrycode)#
+library(lubridate)#
+#
+setwd('~/Blog/data/ACLED v WWAD/')#
+#
+acled = read.csv('acled.csv')#
+wwad = read.csv('pitf_atrocities.csv')#
+regions = read.csv('regions.csv')#
+colnames(regions) = c('Country','region')#
+#
+acled = select(acled, EVENT_DATE, YEAR, EVENT_TYPE, INTER2, COUNTRY, ADMIN1, ADMIN2, LOCATION, FATALITIES)#
+acled = filter(acled, INTER2==7, FATALITIES>=5, YEAR>=1995, YEAR<=2012)#
+acled$iso = countrycode(acled$COUNTRY, "country.name", "iso3c")#
+acled$month = month(as.Date(acled$EVENT_DATE, "%d %b %Y"))#
+acled = select(acled, iso, YEAR, month, FATALITIES)#
+colnames(acled) = c('iso','year','month','acled.deaths')#
+#
+wwad = select(wwad, Country, Start.Year, Start.Month, Deaths.Number)#
+wwad = left_join(wwad, regions)#
+wwad$Country[wwad$Country=='SUD'] = 'SDN'#
+wwad$Country[wwad$Country=='Nigeria'] = 'NGA'#
+wwad$Country[wwad$Country=="South Sudan "]="SSD"#
+wwad$Country[wwad$Country=="South Sudan"]="SSD"#
+wwad$Country[wwad$Country=="Somalia"]="SOM"#
+wwad$Country[wwad$Country=="SOM "]="SOM"#
+wwad$region[wwad$Country=='SDN'] = 'AF'#
+wwad$region[wwad$Country=='NGA'] = 'AF'#
+wwad$Deaths.Number[wwad$Deaths.Number=="dozens"]=24#
+wwad$deaths = as.numeric(as.character(wwad$Deaths.Number))#
+#
+wwad = filter(wwad, region == 'AF' | Country == 'DZA' | Country == 'EGY' | Country == 'LBY' | Country == 'MAR' | Country == 'TUN')#
+wwad$Deaths.Number = wwad$region = NULL#
+#
+colnames(wwad) = c('iso','year','month','wwad.deaths')#
+wwad = na.omit(wwad)#
+#
+countries = unique(acled$iso)#
+years = seq(1995, 2012, 1)#
+months = seq(1, 12, 1)#
+grid = expand.grid(countries, years, months)#
+colnames(grid) = c('iso','year','month')#
+#
+wwad$wwad.deaths[wwad$wwad.deaths == NA] = 0 #
+monthly = group_by(wwad, iso, year, month)#
+wwad = summarise(monthly, wwad.deaths = sum(wwad.deaths))#
+#
+monthly = group_by(acled, iso, year, month)#
+acled = summarise(monthly, acled.deaths = sum(acled.deaths))#
+#
+data = merge(grid, wwad, by=c('iso','year','month'), all.x=TRUE)#
+data = merge(data, acled, by=c('iso','year','month'), all.x=TRUE)
+head(data)
+data$wwad.deaths[data$wwad.deaths=NA] = 0
+data$wwad.deaths[data$wwad.deaths==NA] = 0
+head(data)
+sum(data$wwad.deaths)
+data$wwad.deaths[is.na(data$wwad.deaths)] = 0
+head(data)
+data$acled.deaths[is.na(data$acled.deaths)] = 0
+dates = data[1:50,]
+dates
+dates$date = as.Date(paste(dates$month, dates$year), "%m%Y")
+dates
+paste(dates$year, dates$month)
+dates$date = as.Date(paste(dates$month, dates$year), "%m %Y")
+dates
+library(zoo)
+dates$date = as.yearmon(paste(dates$month, dates$year), "%m %Y")
+dates
+data = merge(grid, wwad, by=c('iso','year','month'), all.x=TRUE)#
+data = merge(data, acled, by=c('iso','year','month'), all.x=TRUE)#
+data$wwad.deaths[is.na(data$wwad.deaths)] = 0#
+data$acled.deaths[is.na(data$acled.deaths)] = 0#
+data$date = as.yearmon(paste(data$month, data$year), "%m %Y")
+fix(data)
+data = filter(data, year>=1997)
+data$date = as.Date(as.character(data$date), "%b %Y")
+head(data)
+data$date = as.yearmon(paste(data$month, data$year), "%m %Y")
+head(data)
+data$date = as.Date(as.character(data$date), "%B %Y")
+head(data)
+data$date = as.yearmon(paste(data$month, data$year), "%m %Y")
+rm(list=ls())#
+library(ggplot2)#
+library(dplyr)#
+library(countrycode)#
+library(lubridate)#
+library(zoo)#
+#
+setwd('~/Blog/data/ACLED v WWAD/')#
+#
+acled = read.csv('acled.csv')#
+wwad = read.csv('pitf_atrocities.csv')#
+regions = read.csv('regions.csv')#
+colnames(regions) = c('Country','region')#
+#
+acled = select(acled, EVENT_DATE, YEAR, EVENT_TYPE, INTER2, COUNTRY, ADMIN1, ADMIN2, LOCATION, FATALITIES)#
+acled = filter(acled, INTER2==7, FATALITIES>=5, YEAR>=1997, YEAR<=2012)#
+acled$iso = countrycode(acled$COUNTRY, "country.name", "iso3c")#
+acled$month = month(as.Date(acled$EVENT_DATE, "%d %b %Y"))#
+acled = select(acled, iso, YEAR, month, FATALITIES)#
+colnames(acled) = c('iso','year','month','acled.deaths')#
+#
+wwad = select(wwad, Country, Start.Year, Start.Month, Deaths.Number)#
+wwad = left_join(wwad, regions)#
+wwad$Country[wwad$Country=='SUD'] = 'SDN'#
+wwad$Country[wwad$Country=='Nigeria'] = 'NGA'#
+wwad$Country[wwad$Country=="South Sudan "]="SSD"#
+wwad$Country[wwad$Country=="South Sudan"]="SSD"#
+wwad$Country[wwad$Country=="Somalia"]="SOM"#
+wwad$Country[wwad$Country=="SOM "]="SOM"#
+wwad$region[wwad$Country=='SDN'] = 'AF'#
+wwad$region[wwad$Country=='NGA'] = 'AF'#
+wwad$Deaths.Number[wwad$Deaths.Number=="dozens"]=24#
+wwad$deaths = as.numeric(as.character(wwad$Deaths.Number))#
+#
+wwad = filter(wwad, region == 'AF' | Country == 'DZA' | Country == 'EGY' | Country == 'LBY' | Country == 'MAR' | Country == 'TUN', year>=1997, year<=2012)#
+wwad$Deaths.Number = wwad$region = NULL#
+#
+colnames(wwad) = c('iso','year','month','wwad.deaths')#
+wwad = na.omit(wwad)#
+#
+countries = unique(acled$iso)#
+years = seq(1997, 2012, 1)#
+months = seq(1, 12, 1)#
+grid = expand.grid(countries, years, months)#
+colnames(grid) = c('iso','year','month')#
+#
+wwad$wwad.deaths[wwad$wwad.deaths == NA] = 0 #
+monthly = group_by(wwad, iso, year, month)#
+wwad = summarise(monthly, wwad.deaths = sum(wwad.deaths))#
+#
+monthly = group_by(acled, iso, year, month)#
+acled = summarise(monthly, acled.deaths = sum(acled.deaths))#
+#
+data = merge(grid, wwad, by=c('iso','year','month'), all.x=TRUE)#
+data = merge(data, acled, by=c('iso','year','month'), all.x=TRUE)#
+data$wwad.deaths[is.na(data$wwad.deaths)] = 0#
+data$acled.deaths[is.na(data$acled.deaths)] = 0#
+data$date = as.yearmon(paste(data$month, data$year), "%m %Y")
+head(data)
+ggplot(data=data,#
+aes(date,deaths))
+ggplot(data, aes(date,deaths))
+ggplot(data, aes(date,deaths)) +#
+geom_line(colour='black')
+ggplot(data, aes(date,wwad.deaths)) +#
+geom_line(colour='black')
+data$date = as.Date(paste(data$month,"-",data$year), "%m %Y")
+head(data)
+dates = data[1:50,]
+dates = data[1:25,]
+as.Date(paste(dates$month,"-",dates$year), "%m %Y")
+paste(dates$month,"-",dates$year)
+paste(dates$month,dates$year)
+?paste
+paste(dates$month,dates$year, sep='-')
+data$date = as.Date(paste(data$month,data$year, sep='-'), "%m-%Y")
+head(data)
+dates$date = paste(dates$month,dates$year, sep='-')
+dates
+is.character(dates$date)
+acled = read.csv('acled.csv')
+acled = select(acled, EVENT_DATE, YEAR, EVENT_TYPE, INTER2, COUNTRY, ADMIN1, ADMIN2, LOCATION, FATALITIES)
+class(acled$EVENT_DATE)
+dates$date = as.factor(dates$date)
+dates
+dates$date = as.Date(dates$date, "%m-%Y"))
+dates$date = as.Date(dates$date, "%m-%Y")
+dates
+dates$date = paste(dates$month,dates$year)
+dates$date = as.Date(dates$date, "%m %Y")
+dates
+data$date = as.yearmon(paste(data$month, data$year), "%m %Y")
+head(data)
+data$date2 = as.Date(as.character(data$date2), "%m %Y")
+data$date2 = as.Date(as.character(data$date), "%m %Y")
+head(data)
+data$date2 = as.Date(as.character(data$date), "%b %Y")
+head(data)
+data$date = as.yearmon(paste(data$month, data$year), "%b %Y")
+head(data)
+data$date = as.yearmon(paste(data$month, data$year), "%m %Y")
+class(data$date)
+data$date= as.character(data$date)
+head(data)
+data$date2 = as.Date(data$date, "%b %Y")
+head(data)
+class(data$date)
+?as.Date
+data$date = as.yearmon(paste(data$month, data$year, sep='-'), "%m-%Y")
+class(data$date)
+head(data)
+data$date = as.character(data$date)
+class(data$date)
+data$date2 = as.Date(data$date, "%b %Y")
+head(data)
+data$date = as.yearmon(paste(data$month, data$year, sep='-'), "%m-%Y")
+data$date2=NULL
+autoplot(data$date) + scale_x_yearmon()
+ggplot(data$date) + scale_x_yearmon()
+z = cbind(data$date, data$wwad.deaths)
+autoplot(z)
+ggplot(z)
+z = as.data.frame(z)
+autoplot(z)
+x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))#
+x <- zoo(rnorm(5), x.Date)
+x
+?autoplot
+mytimes = with(data, ISOdatetime(year,month))
+data$date <- as.Date( paste( data$month , df$year , sep = "." )  , format = "%m.%Y" )
+data$date <- as.Date( paste( data$month , data$year , sep = "." )  , format = "%m.%Y" )
+head(data)
+data$date <- as.Date( paste( data$month , data$year , sep = "." )  , format = "%m.%y" )
+head(data)
+data$date=NULL
+transform(data, Date = as.Date(paste(year, month, 1, sep = "-")))
+test = transform(data, Date = as.Date(paste(year, month, 1, sep = "-")))
