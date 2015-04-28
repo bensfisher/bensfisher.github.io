@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Ben Fisher &middot; Articles by Ben Fisher</title>
-    <link rel="shortcut icon" type="image/png" href="../favicon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
-    <link rel="stylesheet" href="../theme/css/screen.css" type="text/css" />
-    <link rel="stylesheet" href="../theme/css/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../theme/css/print.css" type="text/css" media="print" />
+      <meta charset="utf-8" />
+    <title>Ben Fisher &middot; Aggregating ICEWS Data in R</title>
+    <link rel="shortcut icon" type="image/png" href="./favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="stylesheet" href="./theme/css/screen.css" type="text/css" />
+    <link rel="stylesheet" href="./theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="./theme/css/print.css" type="text/css" media="print" />
     <meta name="generator" content="Pelican" />
+
+
+
 </head>
 <body>
     <header>
         <nav>
-
-                <li class="ephemeral selected"><a href="../author/ben-fisher.html">Ben Fisher</a></li>                <li><a href="..">Home</a></li>
-                <li><a href="../pages/about.html">About Me</a></li>
-                <li><a href="../archives.html">Archives</a></li>
+                <li><a href=".">Home</a></li>
+                <li><a href="./pages/about.html">About Me</a></li>
+                <li><a href="./archives.html">Archives</a></li>
         </nav>
         <div class="header_box">
-            <h1><a href="..">Ben Fisher</a></h1>
+            <h1><a href=".">Ben Fisher</a></h1>
         </div>
     </header>
     <div id="wrapper">
@@ -27,7 +29,7 @@
             <h4 class="date">Apr 28, 2015</h4>
             <article class="post">
 <h2 class="title">
-                    <a href="../aggregating-icews-data-in-r.html" rel="bookmark" title="Permanent Link to &quot;Aggregating ICEWS Data in R&quot;">Aggregating ICEWS Data in R</a>
+                    <a href="./aggregating-icews-data-in-r.html" rel="bookmark" title="Permanent Link to &quot;Aggregating ICEWS Data in R&quot;">Aggregating ICEWS Data in R</a>
                 </h2>
 
                 <p>This is going to be a walkthrough of an R function I've written, which can be found <a href="https://github.com/bensfisher/aggregate_icews">here</a> that aggregates the
@@ -384,224 +386,7 @@ using this, please let me know. There's only so much testing I can do myself.</p
 
                 <div class="clear"></div>
                 <div class="info">
-                    <a href="../aggregating-icews-data-in-r.html">posted at 00:00</a>
-                </div>
-
-            </article>
-            <div class="clear"></div>
-            <h4 class="date">Feb 17, 2015</h4>
-            <article class="post">
-<h2 class="title">
-                    <a href="../counting-the-dead.html" rel="bookmark" title="Permanent Link to &quot;Counting the Dead&quot;">Counting the Dead</a>
-                </h2>
-
-                <p>As Jay Ulfelder pointed out in a <a href="https://dartthrowingchimp.wordpress.com/2015/02/17/no-one-stayed-to-count-the-bodies/">recent blog post</a>,
-getting data on political violence, especially in undeveloped countries, is hard.
-Violent events can go unreported, either due to government suppression or a lack
-of reporters in the region. The information that does get through is rarely going to
-be perfect. As a result, determining specific numbers for dead and wounded turns
-into a morbid game of educated guessing.</p>
-<p>To illustrate Jay's point that numbers are difficult to get at, I've done a rough
-comparison of two datasets that record incidents of violence against civilians.
-The motivation behind this effort is to show that even when researchers are able to collect data,
-the results are far from consistent. The two datasets are the <a href="http://eventdata.parusanalytics.com/data.dir/atrocities.html">Worldwide Atrocities Dataset</a>,
-and the <a href="http://www.acleddata.com/">Armed Conflict Location and Event Data Project</a> (ACLED).
-The former records violent acts against noncombatants that result in at least 5
-fatalities - so anything from a suicide bomber to government troops firing on 
-protestors - for all countries. The latter dataset examines armed conflict in 
-general, with a focus on African countries. For the purposes of this blog post,
-I only look at ACLED events that involved violence against civilians.</p>
-<p>Now, to get a few of the gory preprocessing details out of the way: 
-this is looking at African countries from 1997-2012, I drop ACLED observations 
-with fewer than 5 fatalities to better match the Atrocities coding rules, and 
-I drop a couple of extreme outliers from each dataset.[1]</p>
-<p>The two datasets record roughly the same number of observations - 1,009 in the Atrocities
-dataset and 1,037 in ACLED - but the total number of deaths recorded varies 
-substantially. The Atrocities data for this sample records 83,913 fatalities, while
-ACLED records 78,164. The figure below is a plot of total the number of deaths
-per month recorded by each dataset. It's easy to see that the two datasets are
-giving very different death totals in some cases, particularly in the early 2000's. 
-The statistical correlation between the two series is about .25. </p>
-<p><img alt="Alt text" src="/images/violence.png" /></p>
-<p>As another rough check, I did a comparison of deaths per month for just the 
-Democratic Republic of the Congo. The DRC has a long history of civil conflict
-that has resulted in huge numbers of civilian casualties. It's a great example 
-of a situation where we know violence against civilians is a major problem, but 
-determining the scale is extremely difficult. As the figure below shows, the
-two datasets appear to capture the same major spikes in violence, but give
-very different numbers of dead in several cases. </p>
-<p><img alt="Alt text" src="/images/congo.png" /></p>
-<p>Unfortunately for researchers, I don't see this problem ever really getting better.
-I think there will be some improvement in reporting accuracy as mobile phone use
-increases, but the numbers are remarkably inconsistent as recently as 2010. However,
-this doesn't resolve the fact that our historical data are all over the place. 
-The 'ground truth' of political violence remains murky at best.</p>
-<h2>Notes</h2>
-<p>[1] The Atrocities dataset has a campaign observation for Sudan where 50,000 
-people were killed, and ACLED records a major massacre in the Congo where 
-25,000 were killed. Neither of these observations were matched in the other dataset.
-I discarded them to keep the figures readable.</p>
-<p>Data, figures, and replication code for this post can be accessed 
-<a href="https://github.com/bensfisher/bensfisher.github.io/tree/master/Replication/Counting%20the%20Dead">here</a>.</p>
-
-                <div class="clear"></div>
-                <div class="info">
-                    <a href="../counting-the-dead.html">posted at 00:00</a>
-                </div>
-
-            </article>
-            <div class="clear"></div>
-            <h4 class="date">Jul 08, 2014</h4>
-            <article class="post">
-<h2 class="title">
-                    <a href="../the-problem-with-the-roc-curve.html" rel="bookmark" title="Permanent Link to &quot;The Problem with the ROC Curve&quot;">The Problem with the ROC Curve</a>
-                </h2>
-
-                <p>The Receiver Operating Characteristic (ROC) curve is one of the most ubiquitous
-measures of accuracy in the machine learning literature. Originally developed 
-for signal detection during World War II, the curve provides a graphical
-representation of a predictive model's accuracy by showing the true positive and
-false positive rates for a model at various predictive thresholds. These
-thresholds, also referred to as cutoff points, serve to divide observations
-based on their predicted probabilities. For example, a threshold of .5 means
-that the model classifies observations with predicted probabilities greater
-than or equal to .5 as positives, and those with predicted probabilities less
-than .5 as negatives. Because it the ideal cutoff point varies based on the
-problem at hand, the ROC curve provides a means of determining where the best
-cutoff point is. </p>
-<p>The main metric derived from the ROC curve is the area under the curve (AUC) 
-score, which, as the name suggests, is the area of the graph contained under 
-the ROC curve. The ideal AUC is 1.0, which means the model correctly classifies
-all of the positive observations without any false positives. An AUC of .5 
-indicates that the model is no better than a coin flip. The AUC is often used
-as a means of model comparison. The intuition is that models with a higher AUC
-are doing a better job of assigning higher predicted probabilities to positive
-observations and lower predicted probabilities to negative observations.</p>
-<p><img alt="Alt text" src="/images/logit_roc.png" /></p>
-<p>The figure above shows ROC curves comparing models for predicting Militarized
-Interstate Incidents [1]. With AUC scores all above .9, it looks like the models
-are all very good. This is when ROC curves become misleading. The axes only 
-measure the rates of positive and negative observations, not the actual numbers. 
-This is fine for a balanced dataset, but it is problematic for underbalanced 
-datasets like the one here. In this case, there are about 300 positive
-observations and over 100,000 negative observations. Suddenly, achieving a true
-positive rate of .8 with a false positive rate of .2 doesn't look so good. A 
-false postive rate of just .01 means 1,000 false positives. This is an unacceptable
-number if we are only getting 100 or so true positives in exchange. </p>
-<p>This issue also renders the ROC curves usefulness for model comparison irrelevant
-for unbalanced data. Even if one model has a better AUC than another, it does
-not mean much if that is due to better performance when the false positive rate
-is greater than .1. The number of true positives are already overwhelmed by 
-the number of false positives. Performance past this point is irrelevant. Really, 
-the best model in this case would be the one that achieves the highest true 
-positive rate, while maintaining a false positive rate of 0. </p>
-<p>For conflict researchers who work almost exclusively with unbalanced data, either
-avoid using ROC curves and related AUC curves as metrics, or include the total
-number of positive and negative cases in the sample as a note attached to the
-figure. Fortunately, there are alternatives. I'll discuss one of these, the 
-precision-recall curve, in another post.</p>
-<h2>Notes</h2>
-<p>[1] I won't get into what incidents are here, but those who are curious can
-check out the [Correlates of War Project page] (http://correlatesofwar.org).</p>
-
-                <div class="clear"></div>
-                <div class="info">
-                    <a href="../the-problem-with-the-roc-curve.html">posted at 00:00</a>
-                </div>
-
-            </article>
-            <div class="clear"></div>
-            <h4 class="date">Jan 10, 2014</h4>
-            <article class="post">
-<h2 class="title">
-                    <a href="../forecasting-rebellion.html" rel="bookmark" title="Permanent Link to &quot;Forecasting Rebellion&quot;">Forecasting Rebellion</a>
-                </h2>
-
-                <p>Welcome to the blog. For this first post, I'm going to talk about a paper
-I have been working on with my classmate, <a href="http://johnbeieler.org">John Beieler</a>.</p>
-<p>I'll start off with a little background. This research builds on a 
-government project known as ICEWS (Intergrated Conflict Early Warning System),
-whose original goal was to develop predictive models for events of interest, 
-such as rebellions, in countries in Southeast Asia. The major difference 
-between our work and that of ICEWS is that we make use of open source event 
-data. We also use statistical models commonly found in data mining literature. </p>
-<h2>Data</h2>
-<p>The period of analysis covers 1997 to 2009 and is aggregated at a monthly level
-Our event of interest in this case is rebellion. We use a dummy variable, coded 
-as 1 if a rebellion either began or was ongoing that month, and 0 if peace.
-This variable is taken from the original ICEWS data. Our goal is to predict
-6 months into the future.</p>
-<p>We use data from <a href="http://gdeltblog.wordpress.com/">GDELT</a> (Global Database of Events, Location, and Tone), 
-for our independent variables. Each independent variable is a count of the 
-number of a type of event that occurred each month. For example, the variable
-gov_opp_matcf represents the number of conflictual events that occurred between
-the government of that country and an opposition group that took place that 
-month. There are 70 categories total of these actor-actor-event combinations.
-The data for some of these are fairly sparse, so many categories have a lot of
-zeroes. </p>
-<h2>Analysis</h2>
-<p>For the analysis, we use 4 different models: logistic regression, support
-vector machine, random forest, and adaptive boosting. We use the same 75/25 
-train-test data split for each analysis. All hyper-parameters are tuned using
-5-fold grid-search cross validation. In order to correct for both the sparsity
-and range of the data, we scale it so that the data have a mean of 0 and 
-standard deviation of 1. </p>
-<p>Out-of-sample test results for each model are displayed below. The first value
-is the precision score, the second is the recall score, and the third the F1
-score.</p>
-<ul>
-<li>AdaBoost - 67% - 71% - 69%</li>
-<li>Logistic Regression - 63% - 81% - 71%</li>
-<li>Random Forest - 81% - 74% - 77%</li>
-<li>SVM - 66% - 74% - 70%</li>
-</ul>
-<p>We avoid using base accuracy scores due to the nature of what we are trying to
-predict. Rebellions are rare events, so simply predicting zeroes for all 
-observations would still yield very high accuracy. Random forest gets the best
-scores for precision and F1 scores, and logistic regression has the best
-recall. So, which is the best for us? In our case, we want to minimize false
-negatives and maximize our true positives. While we don't want false positives,
-we would prefer those to true negatives. The idea is that we would prefer
-to say a rebellion will happen and be wrong than to predict no rebellion and
-be unprepared. Logistic regression seems to be marginally better than random
-forest for use.</p>
-<p>Below are ROC plots for each of the models. These plot the fraction of true
-positives vs the fraction of false positives as the discrimination threshold 
-is varied.</p>
-<p><img alt="Alt text" src="/images/roc_plot_Prediction_AdaBoost.png" />
-<img alt="Alt text" src="/images/roc_plot_Prediction_LogisticRegression.png" />
-<img alt="Alt text" src="/images/roc_plot_Prediction_RandomForest.png" />
-<img alt="Alt text" src="/images/roc_plot_Prediction_SVM.png" /></p>
-<p>The only one that doesn't perform too well is adaptive boosting. Random forest
-and SVM both have slightly higher area under the curve than logistic regression. 
-However, we are less concerned with false positives than false negatives, which
-ROC curves don't tell us much about.</p>
-<h2>Final Thoughts</h2>
-<p>This all still needs some work. The main issue at the moment is that we are
-predicting every month that a rebellion is ongoing, rather than only rebellion
-onset. We are currently reformatting the data to accomodate this approach.
-Another problem we need to deal with is that we are predicting the outcome for
-each month with just the data from (e.g. predicting December with just data
-from July). We may get better accuracy by weighting data from the months 
-leading up to the 6 month cutoff.</p>
-<p>Overall, it's a good start. We're getting good accuracy in our initial results.
-More importantly, this has all been done with open source data. This also
-provides a good assessment of how new (at least to political science) data
-mining methods compare to the workhorse logit model.</p>
-<h2>Notes</h2>
-<p>Those who want to know more about ICEWS should see O'Brien 2010 "Crisis early
-warning and decision support: Contemporary approaches and thoughts on future 
-research."</p>
-<p>The working paper can be found <a href="https://www.dropbox.com/s/0nl56pbfrg71p5o/ForReb.pdf">here</a></p>
-<p>The ICEWS data is still "official use only" unfortunately, so I can only provides
-the data we used for the independent variables. </p>
-<p>Feel free to email me if you have any questions or comments.</p>
-<p>2/6/14: Due to the ongoing dispute over GDELT, I've taken down the data on the
-independent variables.</p>
-
-                <div class="clear"></div>
-                <div class="info">
-                    <a href="../forecasting-rebellion.html">posted at 18:45</a>
+                    <a href="./aggregating-icews-data-in-r.html">posted at 00:00</a>
                 </div>
 
             </article>

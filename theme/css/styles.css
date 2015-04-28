@@ -1,5 +1,5 @@
 @import url(pygments.css);
-@import url(http://reset5.googlecode.com/hg/reset.min.css);
+@import url(reset.css);
 
 /* General stuff. */
 
@@ -212,24 +212,26 @@ sub {
 /* Code */
 
 .codehilite, .highlight { /* Put code blocks in the right place. */
-    width: 600px;
-    margin: 0 0 0 50px;
+    background-color:#fefefe;
+    width: 800px;
+    margin: 0 0 0 0;
     margin-bottom: 20px;
     overflow: auto;
-    border: 1px solid grey;
+    border: 1px solid lightgrey;
     border-radius: 5px;
 }
 
 .article pre {
     font-family: 'Source Code Pro';
-    font-size: .85em;
+    font-size: .8em;
     margin: auto;
     padding: 1em;
+    line-height: 120%;
 }
 
 .article code {
     font-family: 'Source Code Pro';
-    font-size: .85em;
+    font-size: 1em;
 }
 
 /* Footer at page bottom */
